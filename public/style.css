@@ -1,0 +1,13 @@
+
+button:has(.lucide-thumbs-down) {
+    display: none !important;
+}
+
+button:has(.lucide-thumbs-up) {
+    display: none !important;
+}
+
+/*nascondi questo pulsante: id="share-thread"*/
+#share-thread {
+    display: none !important;
+}

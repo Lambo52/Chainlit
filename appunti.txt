@@ -1,0 +1,17 @@
+1 - Chat recdenti da disabilitare o massimo limitare 					- OK
+2 - Droppare memoria open webui (in personalization) 					- OK
+3 - Drop chat archiviate								- OK
+4 - unstructored vs docling
+5 - test di descrizione immagine vs ocr text extraction
+6 - Postgres di openweb ui
+7 - filter nelle query a chromadb (e metadati in inserimento chunk). 			- OK
+8 - modifica schema con pre-filtro delle sorgenti per i chunck in base al gruppo
+9 - tabella postgres con mappatura GRUPPO (openwebui) - DATASOURCE (metadato chromadb)
+10 - LLM deve tornare la sua risposta generata + link alla documentazione (pagina, nome documento, posizione documento nelle share)										- OK
+11 - fare una share dove ci sono tutti i documenti
+12 - verificare come fare l'apertura del documento	
+13 - chiarire quanta chat mantenere (messaggi pregressi)... + CHIARIRE se i messaggi precedenti permettono già la risposta senza riavviare la logica RAG.							- OK
+14 - Come gestire le tabelle? Angelo (dottorando di Simonini) aveva fatto una cosa carina in cui llm ti portava al campo della tabella.
+15 - gestire la parte di moderation, se la domanda è una cazzata o non è pertinente allo scopo del sistema. "Mi parli delle novità in ambito logistica di oggi" -> No, non sono stato sviluppato per questo. (modello super fast...) - OK
+
+
