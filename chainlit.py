@@ -53,10 +53,7 @@ async def on_chat_resume(thread: ThreadDict):
 async def on_message(message: cl.Message):
     
     chat_history = cl.user_session.get("chat_history", [])
-# TODO: DECOMMENTARE PER LIMITARE I MESSAGGI
-    # if len(chat_history) >= MAX_MESSAGES:
-    #     await cl.ErrorMessage(content="Limite massimo di messaggi raggiunto. Inizia una nuova conversazione.").send()
-    #     return
+
     
     user = cl.user_session.get("user")
     gruppo = user.identifier.split("-")[1] if user else "default"
