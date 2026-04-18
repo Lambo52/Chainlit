@@ -51,10 +51,14 @@ async def on_chat_resume(thread: ThreadDict):
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    
+
+    if len(message.content) > 1000:
+        await cl.Message(content="Il tuo messaggio è troppo lungo. Per favore, scrivi meno di 1000 caratteri.").send()
+        return
+
     chat_history = cl.user_session.get("chat_history", [])
 
-    
+
     user = cl.user_session.get("user")
     gruppo = user.identifier.split("-")[1] if user else "default"
 

@@ -3,6 +3,10 @@ import sys
 from database.utils import connect_db
 
 
+# creazione tabelle per chainlit
+
+#INOLTRE oltre a quelle che servono direttamente a chainlit, in un secondo momento per l'autenticazione e l'associazione ai gruppi è stata creata la tabella auth_user con campi identifier password e gruppo, identifier pk e tutti e 3 i campi sono testo
+
 try:
     
     connection = connect_db()
