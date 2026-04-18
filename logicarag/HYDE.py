@@ -9,14 +9,15 @@ load_dotenv()
 url_llm = os.getenv("VLLM_API_BASE_URL")
 
 llm = OpenAILike(
-    model='Qwen/Qwen2.5-32B-Instruct-AWQ',
+    model='Qwen/Qwen3-32B-AWQ',
     api_base=url_llm,
     api_key="null",
     is_chat_model=True,
     is_function_calling_model=True,
     timeout=60.0,
     temperature=0.1,
-    context_window=8192
+    context_window=8192,
+    model_kwargs={"chat_template_kwargs": {"enable_thinking": False}},
 )
 
 

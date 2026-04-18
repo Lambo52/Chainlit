@@ -74,15 +74,16 @@ def rispostarag(messaggio_attuale, gruppo, history):
     
     llm = OpenAILike(
         model='Qwen/Qwen3-32B-AWQ',
-        api_base=VLLM_API_BASE_URL, 
+        api_base=VLLM_API_BASE_URL,
         api_key="null",
         is_chat_model=True,
-        is_function_calling_model=True,    
+        is_function_calling_model=True,
         timeout=60.0,
         streaming=True,
         context_window=8192, # CHECK
         temperature=0,
         #max_tokens=1024, #CHECK totale
+        model_kwargs={"chat_template_kwargs": {"enable_thinking": False}},
     )
     # llm = GoogleGenAI(
     #     model="models/gemini-2.5-pro",
