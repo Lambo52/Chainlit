@@ -80,9 +80,9 @@ def rispostarag(messaggio_attuale, gruppo, history):
         is_function_calling_model=True,
         timeout=60.0,
         streaming=True,
-        context_window=8192, # CHECK
-        temperature=0,
-        #max_tokens=1024, #CHECK totale
+        context_window=12288, # CHECK
+        temperature=0.2,
+        max_tokens=1024, #CHECK totale
         model_kwargs={"chat_template_kwargs": {"enable_thinking": False}},
     )
     # llm = GoogleGenAI(
