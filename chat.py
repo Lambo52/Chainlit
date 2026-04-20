@@ -49,7 +49,7 @@ def rispostarag(messaggio_attuale, gruppo, history):
         "'Mi dispiace, ma non ho informazioni sufficienti nel manuale WAMAS per rispondere a questa domanda.'\n"
         "3. Non utilizzare conoscenze esterne al di fuori del contesto fornito.\n"
         "4. Mantieni un tono tecnico, asciutto e professionale.\n"
-        "5. Se possibile, cita la sezione o il capitolo specifico se presente nel testo.\n\n"
+        "5. Se possibile, cita la sezione o il capitolo specifico se presente nel testo, cita anche il nome del documento.\n\n"
         
         f"<context>\n{context_str}\n</context>\n\n"
         
