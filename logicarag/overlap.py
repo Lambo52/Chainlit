@@ -48,24 +48,24 @@ def get_context_overlap(query_text, user_role, hydeaugmented=None, queryaugmenta
     filters = MetadataFilters(
         filters=[
             MetadataFilter(
-                key="groups",  
-                value=user_role,    
-                operator=FilterOperator.EQ #operatore maledetto
+                key="groups",
+                value=user_role,
+                operator=FilterOperator.ANY #MESSO ANY PERCHé CONTROLLA CHE ALMENO UN ELEMENTO DELLA LISTA DOCUMENTO (CHE è SEMPRE 1) SIA PRESENTE NELLA LSTA USER_GROUPS
             )
         ]
     )
 
     topk = 15
-    
+
     retriever_dense = index.as_retriever(
-        vector_store_query_mode=VectorStoreQueryMode.DEFAULT, 
+        vector_store_query_mode=VectorStoreQueryMode.DEFAULT,
         similarity_top_k=topk,
-        filters=filters if user_role != "admin" else None
+        filters=filters if "admin" not in user_role else None
     )
     retriever_sparse = index.as_retriever(
         vector_store_query_mode=VectorStoreQueryMode.SPARSE,
         sparse_top_k=topk,
-        filters=filters if user_role != "admin" else None
+        filters=filters if "admin" not in user_role else None
     )
 
     retriever = QueryFusionRetriever(

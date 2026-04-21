@@ -27,6 +27,14 @@ load_dotenv()
 VLLM_API_BASE_URL = os.getenv("VLLM_API_BASE_URL")
 
 
+GROUP_ACCESS = {
+    "UTL": ["UTL", "MAN", "LOG", "PUB"],
+    "MAN": ["MAN", "LOG", "PUB"],
+    "LOG": ["LOG", "PUB"],
+    "PUB": ["PUB"],
+    "admin": ["admin"],
+}
+
 # funzione di prima
 def rispostarag(messaggio_attuale, gruppo, history):
     
@@ -37,7 +45,8 @@ def rispostarag(messaggio_attuale, gruppo, history):
     #context_str, context_parz = get_context_from_knowledge_base(messaggio_attuale,gruppo)
     #context_str = get_hierarchical_context(messaggio_attuale, gruppo)#, hydeaugmented=hydeaugmented)
     #context_str = windowretrieve(messaggio_attuale, gruppo)#, augmented=hydeaugmented)
-    context_str, context_parz = get_context_overlap(messaggio_attuale, gruppo)#, hydeaugmented=hydeaugmented)
+    gruppi_accessibili = GROUP_ACCESS.get(gruppo, [gruppo])
+    context_str, context_parz = get_context_overlap(messaggio_attuale, gruppi_accessibili)#, hydeaugmented=hydeaugmented)
     # context_str, context_parz = agent_tree(messaggio_attuale,gruppo)
     system_prompt_content = (
         "Sei un assistente tecnico esperto del sistema WMS WAMAS. "
