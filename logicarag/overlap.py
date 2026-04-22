@@ -6,7 +6,6 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.core.vector_stores.types import MetadataFilters, MetadataFilter, FilterOperator
 from llama_index.core.vector_stores.types import VectorStoreQueryMode
-from llama_index.core.retrievers import QueryFusionRetriever
 from logicarag.rerank import reranka
 from llama_index.core import QueryBundle
 
@@ -57,23 +56,11 @@ def get_context_overlap(query_text, user_role, hydeaugmented=None, queryaugmenta
 
     topk = 15
 
-    retriever_dense = index.as_retriever(
-        vector_store_query_mode=VectorStoreQueryMode.DEFAULT,
+    retriever = index.as_retriever(
+        vector_store_query_mode=VectorStoreQueryMode.HYBRID,
         similarity_top_k=topk,
-        filters=filters if "admin" not in user_role else None
-    )
-    retriever_sparse = index.as_retriever(
-        vector_store_query_mode=VectorStoreQueryMode.SPARSE,
         sparse_top_k=topk,
         filters=filters if "admin" not in user_role else None
-    )
-
-    retriever = QueryFusionRetriever(
-    retrievers=[retriever_dense, retriever_sparse],
-    similarity_top_k=2*topk,
-    num_queries=1,          
-    mode="simple",                                       
-    use_async=False
     )
 
     query_bundle = QueryBundle(
