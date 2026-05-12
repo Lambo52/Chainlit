@@ -38,16 +38,13 @@ GROUP_ACCESS = {
 # funzione di prima
 def rispostarag(messaggio_attuale, gruppo, history):
     
-    CHAT_RECENTI_TENUTE = 6 #2 è una conversazione domanda risposta
+    MAX_COPPIE = 3   # 3 coppie = 6 messaggi
+    MAX_CHARS = 1000
 
-    #hydeaugmented = [generate_hypothetical_doc(messaggio_attuale)]    
-    #queryaugmented = generate_augmentation(messaggio_attuale)
-    #context_str, context_parz = get_context_from_knowledge_base(messaggio_attuale,gruppo)
-    #context_str = get_hierarchical_context(messaggio_attuale, gruppo)#, hydeaugmented=hydeaugmented)
-    #context_str = windowretrieve(messaggio_attuale, gruppo)#, augmented=hydeaugmented)
     gruppi_accessibili = GROUP_ACCESS.get(gruppo, [gruppo])
-    context_str, context_parz = get_context_overlap(messaggio_attuale, gruppi_accessibili)#, hydeaugmented=hydeaugmented)
-    # context_str, context_parz = agent_tree(messaggio_attuale,gruppo)
+
+    context_str, context_parz = get_context_overlap(messaggio_attuale, gruppi_accessibili)
+    
     system_prompt_content = (
         "Sei un assistente tecnico esperto del sistema WMS WAMAS. "
         "Il tuo obiettivo è fornire risposte precise, professionali e basate esclusivamente sui dati forniti.\n\n"
@@ -73,11 +70,23 @@ def rispostarag(messaggio_attuale, gruppo, history):
     #     "### FINE CONTESTO"
     # )
 
-    if CHAT_RECENTI_TENUTE > 0:    
-        if len(history) > CHAT_RECENTI_TENUTE:
-            history = history[-CHAT_RECENTI_TENUTE:]
-    else:
-        history = []
+    # Allinea a un numero pari di messaggi (scarta eventuale messaggio orfano iniziale)
+    paired_history = history[len(history) % 2:]
+
+    # Raggruppa in coppie (user, assistant) in ordine cronologico
+    pairs = [paired_history[i:i+2] for i in range(0, len(paired_history), 2)]
+
+    # Itera dalle coppie più recenti verso le più vecchie
+    selected_pairs = []
+    total_chars = 0
+    for pair in reversed(pairs):
+        pair_chars = sum(len(msg["content"]) for msg in pair)
+        if total_chars + pair_chars > MAX_CHARS or len(selected_pairs) >= MAX_COPPIE:
+            break
+        selected_pairs.insert(0, pair)
+        total_chars += pair_chars
+
+    history = [msg for pair in selected_pairs for msg in pair]
 
     
     
@@ -89,7 +98,7 @@ def rispostarag(messaggio_attuale, gruppo, history):
         is_function_calling_model=True,
         timeout=60.0,
         streaming=True,
-        context_window=12288, # CHECK
+        context_window=8144, # CHECK
         temperature=0.2,
         max_tokens=1024, #CHECK totale
         model_kwargs={"chat_template_kwargs": {"enable_thinking": False}},
@@ -131,7 +140,7 @@ def rispostarag(messaggio_attuale, gruppo, history):
     yield "\nDOCUMENTI USATI:\n" + context_str + "\n"
     
     print("="*30)
-    print(f"History length usata: {len(history)}")
+    print(f"History usata: {len(history)} messaggi, {sum(len(m['content']) for m in history)} caratteri")
 
 
 # test
