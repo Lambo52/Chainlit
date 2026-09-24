@@ -72,7 +72,7 @@ def get_context_from_knowledge_base(query_text, user_role, hydeaugmented=None, q
     retrievers=[retriever_dense, retriever_sparse],
     similarity_top_k=2*topk,
     num_queries=1,          
-    mode="simple",                                       
+    mode="reciprocal_rerank",                                       
     use_async=False
     )
 
