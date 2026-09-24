@@ -8,6 +8,7 @@ from llama_index.core.vector_stores.types import MetadataFilters, MetadataFilter
 from llama_index.core.vector_stores.types import VectorStoreQueryMode
 from logicarag.rerank import reranka
 from llama_index.core import QueryBundle
+from llama_index.core.retrievers import QueryFusionRetriever
 
 
 VLLM_API_BASE_URL = os.getenv("VLLM_API_BASE_URL")
@@ -54,13 +55,27 @@ def get_context_overlap(query_text, user_role, hydeaugmented=None, queryaugmenta
         ]
     )
 
-    topk = 15
+    topk = 17
 
-    retriever = index.as_retriever(
-        vector_store_query_mode=VectorStoreQueryMode.HYBRID,
+    filtro = filters if "admin" not in user_role else None
+
+    retriever_dense = index.as_retriever(
+        vector_store_query_mode=VectorStoreQueryMode.DEFAULT,
         similarity_top_k=topk,
+        filters=filtro,
+    )
+    retriever_sparse = index.as_retriever(
+        vector_store_query_mode=VectorStoreQueryMode.SPARSE,
         sparse_top_k=topk,
-        filters=filters if "admin" not in user_role else None
+        filters=filtro,
+    )
+
+    retriever = QueryFusionRetriever(
+        retrievers=[retriever_dense, retriever_sparse],
+        similarity_top_k=topk,
+        num_queries=1,             
+        mode="reciprocal_rerank",  
+        use_async=False,
     )
 
     query_bundle = QueryBundle(
@@ -79,7 +94,7 @@ def get_context_overlap(query_text, user_role, hydeaugmented=None, queryaugmenta
         return "Nessuna informazione rilevante trovata nel database.", " "
 
     # Estrai solo i nodi (senza score) per passarli al reranker
-    nodes = reranka([node.node for node in nodes], query_text, top_n=5)
+    nodes = reranka([node.node for node in nodes], query_text, top_n=7)
     
     context_parts = []
     
@@ -87,24 +102,22 @@ def get_context_overlap(query_text, user_role, hydeaugmented=None, queryaugmenta
     
     for node_ws in nodes:
         filename = node_ws.node.metadata.get('origin_filename', 'Unknown File')
-        page = node_ws.node.metadata.get('pages', 'N/A')
+        #page = node_ws.node.metadata.get('pages', 'N/A')
         content = node_ws.node.get_content().strip()
-        context_parts.append(f"--- Documento: {filename} (Pag. {page}) ---\n{content}\n")
+        context_parts.append(f"--- Documento: {filename} ---\n{content}\n")
         
         if filename not in docs_dict:
             docs_dict[filename] = []
         
-        docs_dict[filename].extend(page)
+        
     
     
     context_parz_list = []
     for filename, pages in docs_dict.items():
         
-        unique_pages = sorted(set(pages))
         
-        clean_pages = [str(p).strip('[]') for p in unique_pages]
-        pages_str = ", ".join(clean_pages)
-        context_parz_list.append(f"--- Documento: {filename} (Pag. {pages_str}) ---")
+        
+        context_parz_list.append(f"--- Documento: {filename} ---")
     
     full_context = "\n".join(context_parts)
     context_parz = "\n".join(context_parz_list)
